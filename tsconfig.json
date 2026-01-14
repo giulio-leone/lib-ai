@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "../..",
+    "outDir": "./dist",
+    "composite": true,
+    "declaration": true,
+    "noEmit": false,
+    "strict": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../onecoach-shared/packages/contracts" },
+    { "path": "../onecoach-types" },
+    { "path": "../onecoach-schemas" },
+    { "path": "../onecoach-constants" },
+    { "path": "../onecoach-shared/packages/lib-shared" },
+    { "path": "../onecoach-backend/packages/lib-core" },
+    { "path": "../onecoach-backend/packages/lib-config" },
+    { "path": "../onecoach-backend/packages/lib-vercel-admin" }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "name": "@onecoach/lib-ai",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Servizi AI (config, chat, intent-detection, agent-orchestrator)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./ai-model.service": {
+      "types": "./src/ai-model.service.ts",
+      "default": "./src/ai-model.service.ts"
+    },
+    "./ai-provider-config": {
+      "types": "./src/core/providers/ai-provider-config.service.ts",
+      "default": "./src/core/providers/ai-provider-config.service.ts"
+    },
+    "./ai-framework-config.service": {
+      "types": "./src/ai-framework-config.service.ts",
+      "default": "./src/ai-framework-config.service.ts"
+    },
+    "./ai-provider-config.service": {
+      "types": "./src/core/providers/ai-provider-config.service.ts",
+      "default": "./src/core/providers/ai-provider-config.service.ts"
+    },
+    "./chat.service": {
+      "types": "./src/chat.service.ts",
+      "default": "./src/chat.service.ts"
+    },
+    "./openrouter-subkey.service": {
+      "types": "./src/openrouter-subkey.service.ts",
+      "default": "./src/openrouter-subkey.service.ts"
+    },
+    "./utils/model-factory": {
+      "types": "./src/utils/model-factory.ts",
+      "default": "./src/utils/model-factory.ts"
+    },
+    "./utils/credit-validator": {
+      "types": "./src/utils/credit-validator.ts",
+      "default": "./src/utils/credit-validator.ts"
+    },
+    "./provider-options-builder": {
+      "types": "./src/provider-options-builder.ts",
+      "default": "./src/provider-options-builder.ts"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@onecoach/constants": "workspace:*",
+    "@onecoach/contracts": "workspace:*",
+    "@onecoach/lib-config": "workspace:*",
+    "@onecoach/lib-core": "workspace:*",
+    "@onecoach/lib-shared": "workspace:*",
+    "@onecoach/schemas": "workspace:*",
+    "@prisma/client": "^7.2.0",
+    "@onecoach/types-core": "workspace:*",
+    "@onecoach/types-workout": "workspace:*",
+    "@onecoach/types-nutrition": "workspace:*",
+    "@onecoach/types-chat": "workspace:*",
+    "@onecoach/types-analytics": "workspace:*",
+    "@onecoach/types-ai": "workspace:*",
+    "@onecoach/types-ui": "workspace:*",
+    "@onecoach/types-domain": "workspace:*",
+    "@onecoach/types-database": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "sideEffects": false
+}
