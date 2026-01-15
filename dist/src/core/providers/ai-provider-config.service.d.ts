@@ -42,14 +42,14 @@ export declare class AIProviderConfigService {
      * Restituisce la configurazione per un provider
      */
     static getConfig(provider: ProviderName): Promise<{
+        metadata: Prisma.JsonValue | null;
         id: string;
+        provider: import("@prisma/client").$Enums.AIProvider;
         isEnabled: boolean;
+        defaultModel: string | null;
         updatedBy: string | null;
         createdAt: Date;
         updatedAt: Date;
-        metadata: Prisma.JsonValue | null;
-        provider: import("@prisma/client").$Enums.AIProvider;
-        defaultModel: string | null;
         vercelEnvVarId: string | null;
     } | null>;
     /**

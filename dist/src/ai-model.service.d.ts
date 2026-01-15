@@ -30,14 +30,15 @@ export declare class AIModelService {
      * Get all active AI models from the database
      */
     static getAvailableModels(): Promise<{
+        metadata: import(".prisma/client/runtime/client").JsonValue | null;
+        preferredProvider: string | null;
         id: string;
-        description: string | null;
+        provider: import("@prisma/client").$Enums.AIProvider;
         createdAt: Date;
         updatedAt: Date;
-        metadata: import(".prisma/client/runtime/client").JsonValue | null;
-        provider: import("@prisma/client").$Enums.AIProvider;
         modelId: string;
         displayName: string;
+        description: string | null;
         isActive: boolean;
         isDefault: boolean;
         maxTokens: number;
@@ -50,7 +51,6 @@ export declare class AIModelService {
         supportsReasoning: boolean;
         endpoint: string | null;
         apiKeyRef: string | null;
-        preferredProvider: string | null;
         sortOrder: number;
     }[]>;
 }
