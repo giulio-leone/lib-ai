@@ -30,11 +30,11 @@ export declare class AIModelService {
      * Get all active AI models from the database
      */
     static getAvailableModels(): Promise<{
+        id: string;
+        createdAt: Date;
         metadata: import(".prisma/client/runtime/client").JsonValue | null;
         preferredProvider: string | null;
-        id: string;
         provider: import("@prisma/client").$Enums.AIProvider;
-        createdAt: Date;
         updatedAt: Date;
         modelId: string;
         displayName: string;

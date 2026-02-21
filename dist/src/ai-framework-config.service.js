@@ -10,6 +10,7 @@
  */
 import { prisma } from '@onecoach/lib-core';
 import { Prisma } from '@prisma/client';
+import { toPrismaJsonValue } from '@onecoach/lib-shared';
 import { FrameworkFeature, } from './types';
 const FEATURE_ALIASES = {
     workout_import: FrameworkFeature.IMPORT_MODELS,
@@ -180,13 +181,13 @@ export class AIFrameworkConfigService {
             create: {
                 feature: normalizedFeature,
                 isEnabled: isEnabled ?? false,
-                config: mergedConfig,
+                config: toPrismaJsonValue(mergedConfig),
                 description: FEATURE_DESCRIPTIONS[normalizedFeature],
                 updatedBy,
             },
             update: {
                 isEnabled: isEnabled ?? current.isEnabled,
-                config: mergedConfig,
+                config: toPrismaJsonValue(mergedConfig),
                 updatedBy,
                 updatedAt: new Date(),
             },
@@ -248,7 +249,7 @@ export class AIFrameworkConfigService {
                     data: {
                         feature: normalizedFeature,
                         isEnabled: false, // All features disabled by default
-                        config: DEFAULT_CONFIGS[normalizedFeature],
+                        config: toPrismaJsonValue(DEFAULT_CONFIGS[normalizedFeature]),
                         description: FEATURE_DESCRIPTIONS[normalizedFeature],
                         updatedBy,
                     },

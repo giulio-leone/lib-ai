@@ -4,7 +4,7 @@ import type { LanguageModel } from 'ai';
 import { ProviderFactory } from './core/providers/provider-factory';
 import type { ProviderName } from './core/providers/types';
 import type { StandardizedModelConfig } from './types';
-import { normalizeProviderName } from '@onecoach/types-ai';
+import { normalizeProviderName, resolveProviderFromModelId } from '@onecoach/types-ai';
 
 import { TOKEN_LIMITS } from '@onecoach/constants';
 import { buildProviderOptions } from './provider-options-builder';
@@ -238,29 +238,7 @@ export class AIModelService {
   }
 
   private static determineProvider(modelId: string): ProviderName {
-    const lowerId = modelId.toLowerCase();
-
-    // OpenRouter models are typically in the form "vendor/model" (e.g. "x-ai/grok-4-fast").
-    // Treat any slash-form modelId as OpenRouter unless DB provider overrides it.
-    if (lowerId.includes('/')) return 'openrouter';
-
-    // Direct provider heuristics (best-effort fallback)
-    if (
-      lowerId.startsWith('minimax-') ||
-      lowerId === 'minimax-m2.1' ||
-      lowerId.includes('minimax')
-    ) {
-      return 'minimax';
-    }
-    if (lowerId.startsWith('claude-') || lowerId.includes('claude')) return 'anthropic';
-    if (lowerId.startsWith('gpt-') || lowerId.startsWith('o1-') || lowerId.includes('gpt')) {
-      return 'openai';
-    }
-    if (lowerId.startsWith('gemini-') || lowerId.includes('gemini')) return 'google';
-    if (lowerId.startsWith('grok-') || lowerId.includes('grok')) return 'xai';
-
-    // Default fallback
-    return 'openrouter';
+    return resolveProviderFromModelId(modelId);
   }
 
   private static async getApiKeyForProvider(provider: ProviderName): Promise<string> {

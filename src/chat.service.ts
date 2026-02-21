@@ -123,7 +123,7 @@ class ChatService implements IChatService {
       // Se non trova JSON strutturato, restituisce la risposta raw
       return {
         type,
-        data: response as unknown as T,
+        data: response as T,
         rawMessage: response,
         success: true,
       };

@@ -11,6 +11,7 @@
 
 import { prisma } from '@onecoach/lib-core';
 import { Prisma } from '@prisma/client';
+import { toPrismaJsonValue } from '@onecoach/lib-shared';
 import type { ai_framework_configs, ai_framework_config_history } from '@prisma/client';
 import {
   FrameworkFeature,
@@ -217,7 +218,7 @@ export class AIFrameworkConfigService {
     return {
       isEnabled: record.isEnabled,
       config:
-        (record.config as unknown as FeatureConfigMap[F]) ||
+        (record.config as FeatureConfigMap[F]) ||
         (DEFAULT_CONFIGS[normalizedFeature] as FeatureConfigMap[F]),
     };
   }
@@ -273,13 +274,13 @@ export class AIFrameworkConfigService {
       create: {
         feature: normalizedFeature,
         isEnabled: isEnabled ?? false,
-        config: mergedConfig as unknown as Prisma.JsonObject,
+        config: toPrismaJsonValue(mergedConfig),
         description: FEATURE_DESCRIPTIONS[normalizedFeature],
         updatedBy,
       },
       update: {
         isEnabled: isEnabled ?? current.isEnabled,
-        config: mergedConfig as unknown as Prisma.JsonObject,
+        config: toPrismaJsonValue(mergedConfig),
         updatedBy,
         updatedAt: new Date(),
       },
@@ -357,7 +358,7 @@ export class AIFrameworkConfigService {
           data: {
             feature: normalizedFeature,
             isEnabled: false, // All features disabled by default
-            config: DEFAULT_CONFIGS[normalizedFeature] as unknown as Prisma.JsonObject,
+            config: toPrismaJsonValue(DEFAULT_CONFIGS[normalizedFeature]),
             description: FEATURE_DESCRIPTIONS[normalizedFeature],
             updatedBy,
           },

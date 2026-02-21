@@ -59,3 +59,6 @@ export type {
   ModelConfig,
   GeminiThinkingLevel,
 } from './core/providers/types';
+
+// Re-export provider resolution from types-ai SSOT
+export { resolveProviderFromModelId, MODEL_PREFIX_REGISTRY } from '@onecoach/types-ai';

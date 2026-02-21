@@ -22,3 +22,4 @@ export * from './prompts/exercise';
 export * from './constants';
 export * from './types';
 export type { ModelTier, ProviderName, ModelConfig, GeminiThinkingLevel, } from './core/providers/types';
+export { resolveProviderFromModelId, MODEL_PREFIX_REGISTRY } from '@onecoach/types-ai';

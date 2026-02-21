@@ -1,24 +1,23 @@
 /**
  * Unified AI Provider
  *
- * Native adapter for AI SDK 6 beta with OpenRouter support
- * implementation moved from one-agent to lib-ai for centralization.
+ * Native adapter for AI SDK 6 with multi-provider support.
+ * Uses a registry pattern for model-to-provider resolution
+ * instead of brittle prefix matching.
  */
 
-import { streamText, generateText, Output } from 'ai';
+import { streamText, generateText, Output, type LanguageModel, type ModelMessage } from 'ai';
 import { AIProviderFactory } from '@onecoach/lib-core';
-// Relative import to avoid circular dependency within lib-ai
-// Correct relative import
 import { buildProviderOptions } from '../provider-options-builder';
 import type { z } from 'zod';
 import {
   type IAIProvider,
   type AIProviderInitConfig,
   type AIProviderType,
-  type AIProviderInstance,
   type OpenRouterMetadata,
   handleError,
 } from './types';
+import { resolveProviderFromModelId } from '@onecoach/types-ai';
 
 /**
  * MiniMax supported models
@@ -26,33 +25,36 @@ import {
 export const MINIMAX_MODELS = [
   'MiniMax-M2',
   'MiniMax-M2-Stable',
-  'MiniMax-M2.1', // Early preview access
+  'MiniMax-M2.1',
 ] as const;
 
 export type MinimaxModel = (typeof MINIMAX_MODELS)[number];
 
 /**
- * Clamp temperature for MiniMax API
+ * Provider callable type - each provider returns a function that creates a LanguageModel
  */
+type ProviderCallable = (modelId: string) => LanguageModel;
+
 function clampMinimaxTemperature(temp?: number): number | undefined {
   if (temp === undefined) return undefined;
-  // MiniMax requires 0 < temp <= 1, use 0.01 as minimum
   return Math.min(1, Math.max(0.01, temp));
 }
 
-/**
- * Check if a model string refers to a MiniMax model (direct API)
- */
 function isMiniMaxDirectModel(modelString: string): boolean {
   const modelLower = modelString.toLowerCase();
-  if (modelLower.startsWith('minimax-m2') || modelLower === 'minimax-m2.1') {
-    return true;
-  }
-  return MINIMAX_MODELS.some((m) => m.toLowerCase() === modelLower);
+  return MINIMAX_MODELS.some((m) => m.toLowerCase() === modelLower) ||
+    modelLower.startsWith('minimax-m2');
+}
+
+/**
+ * Resolve provider type from model string using the shared registry.
+ */
+function resolveProviderType(modelString: string): AIProviderType {
+  return resolveProviderFromModelId(modelString) as AIProviderType;
 }
 
 export class AIProvider implements IAIProvider {
-  private providers: Map<AIProviderType, any> = new Map();
+  private providers: Map<AIProviderType, ProviderCallable> = new Map();
 
   constructor(configs: AIProviderInitConfig[]) {
     for (const config of configs) {
@@ -61,56 +63,37 @@ export class AIProvider implements IAIProvider {
   }
 
   private initProvider(config: AIProviderInitConfig): void {
+    // AIProviderFactory returns provider callables that are compatible with ProviderCallable
+    // The cast is at the boundary between AI SDK provider packages and our unified type
     switch (config.type) {
-      case 'openrouter': {
-        this.providers.set(
-          'openrouter',
-          AIProviderFactory.createOpenRouter({
-            apiKey: config.apiKey,
-          })
-        );
+      case 'openrouter':
+        this.providers.set('openrouter', AIProviderFactory.createOpenRouter({ apiKey: config.apiKey }) as ProviderCallable);
         break;
-      }
       case 'openai':
-        this.providers.set('openai', AIProviderFactory.createOpenAI(config.apiKey));
+        this.providers.set('openai', AIProviderFactory.createOpenAI(config.apiKey) as ProviderCallable);
         break;
       case 'anthropic':
-        this.providers.set('anthropic', AIProviderFactory.createAnthropic(config.apiKey));
+        this.providers.set('anthropic', AIProviderFactory.createAnthropic(config.apiKey) as ProviderCallable);
         break;
       case 'google':
-        this.providers.set('google', AIProviderFactory.createGoogle(config.apiKey));
+        this.providers.set('google', AIProviderFactory.createGoogle(config.apiKey) as ProviderCallable);
         break;
       case 'xai':
-        this.providers.set('xai', AIProviderFactory.createXAI(config.apiKey));
+        this.providers.set('xai', AIProviderFactory.createXAI(config.apiKey) as ProviderCallable);
         break;
-      case 'minimax': {
-        this.providers.set('minimax', AIProviderFactory.createMiniMax(config.apiKey));
+      case 'minimax':
+        this.providers.set('minimax', AIProviderFactory.createMiniMax(config.apiKey) as ProviderCallable);
         break;
-      }
     }
   }
 
-  getProvider(modelString: string): AIProviderInstance | undefined {
-    if (modelString.includes('/')) {
-      return this.providers.get('openrouter');
+  getProvider(modelString: string): ProviderCallable {
+    const providerType = resolveProviderType(modelString);
+    const provider = this.providers.get(providerType);
+    if (!provider) {
+      throw new Error(`Provider '${providerType}' not initialized for model: ${modelString}`);
     }
-    if (modelString.startsWith('gpt-')) {
-      return this.providers.get('openai');
-    }
-    if (modelString.startsWith('claude-')) {
-      return this.providers.get('anthropic');
-    }
-    if (modelString.startsWith('gemini-')) {
-      return this.providers.get('google');
-    }
-    if (modelString.startsWith('grok-')) {
-      return this.providers.get('xai');
-    }
-    if (isMiniMaxDirectModel(modelString)) {
-      return this.providers.get('minimax');
-    }
-
-    throw new Error(`No provider found for model: ${modelString}`);
+    return provider;
   }
 
   async generateStructuredOutput<T>(params: {
@@ -124,13 +107,8 @@ export class AIProvider implements IAIProvider {
     abortSignal?: AbortSignal;
   }): Promise<{ output: T; usage: { totalTokens: number; costUSD?: number } }> {
     const provider = this.getProvider(params.model);
-    if (!provider) {
-      throw new Error(`Provider not initialized for model: ${params.model}`);
-    }
-
     const modelName = params.model.trim().replace(/\s+/g, '');
-    const isOpenRouter =
-      params.model.includes('/') || this.providers.get('openrouter') === provider;
+    const isOpenRouter = params.model.includes('/');
 
     if (isOpenRouter && params.onLog) {
       params.onLog('[AIProvider] OpenRouter call', { model: modelName });
@@ -139,50 +117,40 @@ export class AIProvider implements IAIProvider {
     const model = provider(modelName);
 
     try {
-      const messages: Array<{ role: 'system' | 'user'; content: string }> = [];
+      const messages: ModelMessage[] = [];
       if (params.systemPrompt) {
         messages.push({ role: 'system', content: params.systemPrompt });
       }
       messages.push({ role: 'user', content: params.prompt });
 
-      const generateTextParams: any = {
+      const isMiniMaxDirect = isMiniMaxDirectModel(params.model);
+      const temperature = isMiniMaxDirect
+        ? clampMinimaxTemperature(params.temperature)
+        : params.temperature;
+
+      const result = await generateText({
         model,
         output: Output.object({ schema: params.schema }),
-        messages: messages as any,
-        maxTokens: params.maxTokens,
-      };
-
-      if (params.abortSignal) {
-        generateTextParams.abortSignal = params.abortSignal;
-      }
-
-      generateTextParams.providerOptions = buildProviderOptions({
-        modelId: params.model,
+        messages,
+        maxOutputTokens: params.maxTokens,
+        ...(temperature !== undefined && { temperature }),
+        ...(params.abortSignal && { abortSignal: params.abortSignal }),
+        providerOptions: buildProviderOptions({ modelId: params.model }),
       });
 
-      const isMiniMaxDirect = isMiniMaxDirectModel(params.model);
-      if (isMiniMaxDirect && params.temperature !== undefined) {
-        generateTextParams.temperature = clampMinimaxTemperature(params.temperature);
-      } else if (params.temperature !== undefined) {
-          generateTextParams.temperature = params.temperature;
-      }
-
-      const result = await generateText(generateTextParams as any);
-      const output = result.output;
       const usage = result.usage;
       const providerMetadata = result.providerMetadata;
 
       let costUSD: number | undefined;
       if (isOpenRouter && providerMetadata) {
         const openrouterMeta = providerMetadata as OpenRouterMetadata;
-        const openrouter = openrouterMeta.openrouter;
-        if (openrouter?.usage?.cost !== undefined) {
-          costUSD = openrouter.usage.cost;
+        if (openrouterMeta.openrouter?.usage?.cost !== undefined) {
+          costUSD = openrouterMeta.openrouter.usage.cost;
         }
       }
 
       return {
-        output: output as T,
+        output: result.output as T,
         usage: {
           totalTokens: usage.totalTokens || 0,
           costUSD,
@@ -201,63 +169,51 @@ export class AIProvider implements IAIProvider {
     temperature?: number;
     maxTokens: number;
   }): Promise<{ text: string; usage: { totalTokens: number; costUSD?: number } }> {
-      // Re-using implementation pattern
-      const provider = this.getProvider(params.model);
-      if (!provider) {
-        throw new Error(`Provider not initialized for model: ${params.model}`);
-      }
-      const model = provider(params.model);
+    const provider = this.getProvider(params.model);
+    const model = provider(params.model);
+    const isOpenRouter = params.model.includes('/');
 
-      const messages: Array<{ role: 'system' | 'user'; content: string }> = [];
-      if (params.systemPrompt) {
-        messages.push({ role: 'system', content: params.systemPrompt });
-      }
-      messages.push({ role: 'user', content: params.prompt });
-      
-      const isOpenRouter =
-       params.model.includes('/') || this.providers.get('openrouter') === provider;
+    const messages: ModelMessage[] = [];
+    if (params.systemPrompt) {
+      messages.push({ role: 'system', content: params.systemPrompt });
+    }
+    messages.push({ role: 'user', content: params.prompt });
 
-      const streamTextParams: any = {
-        model,
-        messages,
-      };
-      
-      streamTextParams.providerOptions = buildProviderOptions({
-        modelId: params.model,
-      });
+    const isMiniMaxDirect = isMiniMaxDirectModel(params.model);
+    const temperature = isMiniMaxDirect
+      ? clampMinimaxTemperature(params.temperature)
+      : params.temperature;
 
-      const isMiniMaxDirect = isMiniMaxDirectModel(params.model);
-      if (isMiniMaxDirect && params.temperature !== undefined) {
-        streamTextParams.temperature = clampMinimaxTemperature(params.temperature);
-      } else if (params.temperature !== undefined) {
-        streamTextParams.temperature = params.temperature;
-      }
+    const result = streamText({
+      model,
+      messages,
+      ...(temperature !== undefined && { temperature }),
+      providerOptions: buildProviderOptions({ modelId: params.model }),
+    });
 
-      // Using streamText in original code, gathering result
-      const result = streamText(streamTextParams);
-      let fullText = '';
-      for await (const chunk of result.textStream) {
-        fullText += chunk;
+    let fullText = '';
+    for await (const chunk of result.textStream) {
+      fullText += chunk;
+    }
+
+    const usage = await result.usage;
+    const providerMetadata = await result.providerMetadata;
+
+    let costUSD: number | undefined;
+    if (isOpenRouter && providerMetadata) {
+      const openrouterMeta = providerMetadata as OpenRouterMetadata;
+      if (openrouterMeta.openrouter?.usage?.cost !== undefined) {
+        costUSD = openrouterMeta.openrouter.usage.cost;
       }
-      
-      const usage = await result.usage;
-      const providerMetadata = await result.providerMetadata;
-      
-      let costUSD: number | undefined;
-      if (isOpenRouter && providerMetadata) {
-         const openrouterMeta = providerMetadata as OpenRouterMetadata;
-         if (openrouterMeta.openrouter?.usage?.cost !== undefined) {
-             costUSD = openrouterMeta.openrouter.usage.cost;
-         }
-      }
-      
-      return {
-        text: fullText,
-        usage: {
-            totalTokens: usage.totalTokens || 0,
-            costUSD
-        }
-      };
+    }
+
+    return {
+      text: fullText,
+      usage: {
+        totalTokens: usage.totalTokens || 0,
+        costUSD,
+      },
+    };
   }
 
   async *streamText(params: {
@@ -268,31 +224,18 @@ export class AIProvider implements IAIProvider {
     maxTokens: number;
   }): AsyncIterable<string> {
     const provider = this.getProvider(params.model);
-    if (!provider) {
-      throw new Error(`Provider not initialized for model: ${params.model}`);
-    }
-
     const model = provider(params.model);
-    const messages: Array<{ role: 'system' | 'user'; content: string }> = [];
 
+    const messages: ModelMessage[] = [];
     if (params.systemPrompt) {
       messages.push({ role: 'system', content: params.systemPrompt });
     }
-
     messages.push({ role: 'user', content: params.prompt });
-
-    // Note: one-agent implementation did NOT pass maxTokens or temperature to streamText by request?
-    // "temperature removed as per request" comment in source
-    // But then "Note: maxTokens not supported in AI SDK 6 beta with messages format"
-    // I will stick to the one-agent implementation for fidelity
-    
-    // However, I should pass providerOptions
-    const providerOptions = buildProviderOptions({ modelId: params.model });
 
     const result = streamText({
       model,
-      messages: messages as any,
-      providerOptions,
+      messages,
+      providerOptions: buildProviderOptions({ modelId: params.model }),
     });
 
     for await (const chunk of result.textStream) {
@@ -316,21 +259,9 @@ export class AIProvider implements IAIProvider {
     usage: Promise<{ totalTokens: number; costUSD?: number }>;
   } {
     const provider = this.getProvider(params.model);
-    if (!provider) {
-      throw new Error(`Provider not initialized for model: ${params.model}`);
-    }
-
     const modelName = params.model.trim().replace(/\s+/g, '');
-    const isOpenRouter =
-      params.model.includes('/') || this.providers.get('openrouter') === provider;
+    const isOpenRouter = params.model.includes('/');
     const model = provider(modelName);
-
-    let providerOptions: any = isOpenRouter
-      ? buildProviderOptions({
-          modelId: params.model,
-          preferredProvider: params.model.toLowerCase().includes('minimax') ? 'minimax' : undefined,
-        })
-      : undefined;
 
     const isMiniMaxDirect = isMiniMaxDirectModel(params.model);
     let effectiveTemperature = params.temperature;
@@ -344,7 +275,14 @@ export class AIProvider implements IAIProvider {
       }
     }
 
-    const messages: Array<{ role: 'system' | 'user'; content: string }> = [];
+    const providerOptions = isOpenRouter
+      ? buildProviderOptions({
+          modelId: params.model,
+          preferredProvider: params.model.toLowerCase().includes('minimax') ? 'minimax' : undefined,
+        })
+      : undefined;
+
+    const messages: ModelMessage[] = [];
     if (params.systemPrompt) {
       messages.push({ role: 'system', content: params.systemPrompt });
     }
@@ -353,66 +291,49 @@ export class AIProvider implements IAIProvider {
     const result = streamText({
       model,
       output: Output.object({ schema: params.schema }),
-      messages: messages as any,
+      messages,
       abortSignal: params.abortSignal,
       ...(effectiveTemperature !== undefined && { temperature: effectiveTemperature }),
       ...(providerOptions ? { providerOptions } : {}),
       onError({ error }: { error: unknown }) {
         params.onError?.(error);
       },
-    } as any);
+    });
 
-    void result.usage.then((usage: unknown) => {
+    void result.usage.then((usage: Record<string, unknown>) => {
       params.onLog?.('AIProvider structured stream usage', usage as Record<string, unknown>);
     });
 
+    // AI SDK streamText with Output.object returns compatible types.
+    // DeepPartial<T> satisfies Partial<T>, and output Promise<T|undefined> is narrowed.
     return {
-      partialOutputStream: result.partialOutputStream as unknown as AsyncIterable<Partial<T>>,
-      output: result.output as unknown as Promise<T>,
-      usage: result.usage as unknown as Promise<{ totalTokens: number; costUSD?: number }>,
+      partialOutputStream: result.partialOutputStream as AsyncIterable<Partial<T>>,
+      output: Promise.resolve(result.output).then((o) => {
+        if (o === undefined) throw new Error('Structured output was undefined');
+        return o as T;
+      }),
+      usage: Promise.resolve(result.usage).then((u) => ({
+        totalTokens: u.totalTokens || 0,
+      })),
     };
   }
 
-  /**
-   * Factory method to create an AIProvider instance with default env vars
-   */
   static createFromEnv(configs?: AIProviderInitConfig[]): AIProvider {
-     const defaultConfigs: AIProviderInitConfig[] =
+    const defaultConfigs: AIProviderInitConfig[] =
       configs ||
       [
-        {
-          type: 'openrouter' as const,
-          apiKey: process.env.OPENROUTER_API_KEY || '',
-        },
-        {
-          type: 'openai' as const,
-          apiKey: process.env.OPENAI_API_KEY || '',
-        },
-        {
-          type: 'anthropic' as const,
-          apiKey: process.env.ANTHROPIC_API_KEY || '',
-        },
-        {
-          type: 'google' as const,
-          apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || '',
-        },
-        {
-          type: 'xai' as const,
-          apiKey: process.env.XAI_API_KEY || '',
-        },
-        {
-          type: 'minimax' as const,
-          apiKey: process.env.MINIMAX_API_KEY || '',
-        },
+        { type: 'openrouter' as const, apiKey: process.env.OPENROUTER_API_KEY || '' },
+        { type: 'openai' as const, apiKey: process.env.OPENAI_API_KEY || '' },
+        { type: 'anthropic' as const, apiKey: process.env.ANTHROPIC_API_KEY || '' },
+        { type: 'google' as const, apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || '' },
+        { type: 'xai' as const, apiKey: process.env.XAI_API_KEY || '' },
+        { type: 'minimax' as const, apiKey: process.env.MINIMAX_API_KEY || '' },
       ].filter((config: AIProviderInitConfig) => config.apiKey);
 
     return new AIProvider(defaultConfigs);
   }
 }
 
-/**
- * Convenience function to create a provider
- */
 export function createAIProvider(configs?: AIProviderInitConfig[]): AIProvider {
   return AIProvider.createFromEnv(configs);
 }

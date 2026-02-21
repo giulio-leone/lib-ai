@@ -1,21 +1,27 @@
 /**
  * Unified AI Provider
  *
- * Native adapter for AI SDK 6 beta with OpenRouter support
- * implementation moved from one-agent to lib-ai for centralization.
+ * Native adapter for AI SDK 6 with multi-provider support.
+ * Uses a registry pattern for model-to-provider resolution
+ * instead of brittle prefix matching.
  */
+import { type LanguageModel } from 'ai';
 import type { z } from 'zod';
-import { type IAIProvider, type AIProviderInitConfig, type AIProviderInstance } from './types';
+import { type IAIProvider, type AIProviderInitConfig } from './types';
 /**
  * MiniMax supported models
  */
 export declare const MINIMAX_MODELS: readonly ["MiniMax-M2", "MiniMax-M2-Stable", "MiniMax-M2.1"];
 export type MinimaxModel = (typeof MINIMAX_MODELS)[number];
+/**
+ * Provider callable type - each provider returns a function that creates a LanguageModel
+ */
+type ProviderCallable = (modelId: string) => LanguageModel;
 export declare class AIProvider implements IAIProvider {
     private providers;
     constructor(configs: AIProviderInitConfig[]);
     private initProvider;
-    getProvider(modelString: string): AIProviderInstance | undefined;
+    getProvider(modelString: string): ProviderCallable;
     generateStructuredOutput<T>(params: {
         model: string;
         schema: z.ZodSchema<T>;
@@ -70,12 +76,7 @@ export declare class AIProvider implements IAIProvider {
             costUSD?: number;
         }>;
     };
-    /**
-     * Factory method to create an AIProvider instance with default env vars
-     */
     static createFromEnv(configs?: AIProviderInitConfig[]): AIProvider;
 }
-/**
- * Convenience function to create a provider
- */
 export declare function createAIProvider(configs?: AIProviderInitConfig[]): AIProvider;
+export {};
