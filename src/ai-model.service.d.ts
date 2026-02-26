@@ -1,5 +1,5 @@
 import type { LanguageModel } from 'ai';
-import { OperationType } from "@onecoach/types-database";
+import { OperationType } from "@giulio-leone/types/database";
 
 export interface StandardizedModelConfig {
   modelId: string;

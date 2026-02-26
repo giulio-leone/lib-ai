@@ -1,4 +1,4 @@
-import { AIProviderFactory, getAIProviderKey } from '@onecoach/lib-core';
+import { AIProviderFactory, getAIProviderKey } from '@giulio-leone/lib-core';
 /**
  * Provider Factory - Lazy initialization with caching
  * Implements the Factory Pattern for provider management

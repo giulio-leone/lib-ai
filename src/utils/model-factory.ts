@@ -1,6 +1,6 @@
 /**
  * Model Factory Utility
- * @deprecated Use AIProvider from @onecoach/lib-ai instead for unified AI SDK v6 support.
+ * @deprecated Use AIProvider from @giulio-leone/lib-ai instead for unified AI SDK v6 support.
  *
  * Centralizes AI model creation logic.
  */

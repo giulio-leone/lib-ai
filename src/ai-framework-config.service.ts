@@ -9,9 +9,9 @@
  * - Decomposition strategies
  */
 
-import { prisma } from '@onecoach/lib-core';
+import { prisma } from '@giulio-leone/lib-core';
 import { Prisma } from '@prisma/client';
-import { toPrismaJsonValue } from '@onecoach/lib-shared';
+import { toPrismaJsonValue } from '@giulio-leone/lib-shared';
 import type { ai_framework_configs, ai_framework_config_history } from '@prisma/client';
 import {
   FrameworkFeature,

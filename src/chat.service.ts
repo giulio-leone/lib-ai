@@ -5,10 +5,10 @@
  * Implementa IChatService contract
  */
 
-import { storageService, createId, getCurrentTimestamp } from '@onecoach/lib-shared';
-import type { IStorageService } from '@onecoach/lib-shared';
-import type { Message, Conversation, ParsedAiResponse, RequestType } from "@onecoach/types-chat";
-import type { IChatService } from "@onecoach/contracts";
+import { storageService, createId, getCurrentTimestamp } from '@giulio-leone/lib-shared';
+import type { IStorageService } from '@giulio-leone/lib-shared';
+import type { Message, Conversation, ParsedAiResponse, RequestType } from "@giulio-leone/types-chat";
+import type { IChatService } from "@giulio-leone/contracts";
 
 /**
  * Storage key

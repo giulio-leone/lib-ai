@@ -4,7 +4,7 @@
  * Gestione subkey OpenRouter per utenti
  * Crea, revoca e salva subkey nel database
  */
-import { prisma } from '@onecoach/lib-core';
+import { prisma } from '@giulio-leone/lib-core';
 import type { Prisma } from '@prisma/client';
 export interface CreateSubkeyParams {
   userId: string;

@@ -1,6 +1,6 @@
 import type { LanguageModel } from 'ai';
 import type { ProviderConfig, ProviderName } from './types';
-import { AIProviderFactory, getAIProviderKey } from '@onecoach/lib-core';
+import { AIProviderFactory, getAIProviderKey } from '@giulio-leone/lib-core';
 
 type ProviderModelOptions = {
   maxTokens?: number;

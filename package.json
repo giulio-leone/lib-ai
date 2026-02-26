@@ -1,75 +1,74 @@
 {
-  "name": "@onecoach/lib-ai",
+  "name": "@giulio-leone/lib-ai",
   "version": "0.0.0",
   "type": "module",
   "description": "Servizi AI (config, chat, intent-detection, agent-orchestrator)",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./ai-model.service": {
-      "types": "./src/ai-model.service.ts",
-      "default": "./src/ai-model.service.ts"
+      "types": "./dist/ai-model.service.d.ts",
+      "import": "./dist/ai-model.service.js",
+      "require": "./dist/ai-model.service.cjs"
     },
     "./ai-provider-config": {
-      "types": "./src/core/providers/ai-provider-config.service.ts",
-      "default": "./src/core/providers/ai-provider-config.service.ts"
+      "types": "./dist/ai-provider-config.d.ts",
+      "import": "./dist/ai-provider-config.js",
+      "require": "./dist/ai-provider-config.cjs"
     },
     "./ai-framework-config.service": {
-      "types": "./src/ai-framework-config.service.ts",
-      "default": "./src/ai-framework-config.service.ts"
+      "types": "./dist/ai-framework-config.service.d.ts",
+      "import": "./dist/ai-framework-config.service.js",
+      "require": "./dist/ai-framework-config.service.cjs"
     },
     "./ai-provider-config.service": {
-      "types": "./src/core/providers/ai-provider-config.service.ts",
-      "default": "./src/core/providers/ai-provider-config.service.ts"
+      "types": "./dist/ai-provider-config.service.d.ts",
+      "import": "./dist/ai-provider-config.service.js",
+      "require": "./dist/ai-provider-config.service.cjs"
     },
     "./chat.service": {
-      "types": "./src/chat.service.ts",
-      "default": "./src/chat.service.ts"
+      "types": "./dist/chat.service.d.ts",
+      "import": "./dist/chat.service.js",
+      "require": "./dist/chat.service.cjs"
     },
     "./openrouter-subkey.service": {
-      "types": "./src/openrouter-subkey.service.ts",
-      "default": "./src/openrouter-subkey.service.ts"
+      "types": "./dist/openrouter-subkey.service.d.ts",
+      "import": "./dist/openrouter-subkey.service.js",
+      "require": "./dist/openrouter-subkey.service.cjs"
     },
     "./utils/model-factory": {
-      "types": "./src/utils/model-factory.ts",
-      "default": "./src/utils/model-factory.ts"
-    },
-    "./utils/credit-validator": {
-      "types": "./src/utils/credit-validator.ts",
-      "default": "./src/utils/credit-validator.ts"
+      "types": "./dist/utils/model-factory.d.ts",
+      "import": "./dist/utils/model-factory.js",
+      "require": "./dist/utils/model-factory.cjs"
     },
     "./provider-options-builder": {
-      "types": "./src/provider-options-builder.ts",
-      "default": "./src/provider-options-builder.ts"
+      "types": "./dist/provider-options-builder.d.ts",
+      "import": "./dist/provider-options-builder.js",
+      "require": "./dist/provider-options-builder.cjs"
     }
   },
   "scripts": {
     "type-check": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsup"
   },
   "dependencies": {
-    "@onecoach/constants": "workspace:*",
-    "@onecoach/contracts": "workspace:*",
-    "@onecoach/lib-config": "workspace:*",
-    "@onecoach/lib-core": "workspace:*",
-    "@onecoach/lib-shared": "workspace:*",
-    "@onecoach/schemas": "workspace:*",
-    "@prisma/client": "^7.2.0",
-    "@onecoach/types-core": "workspace:*",
-    "@onecoach/types-workout": "workspace:*",
-    "@onecoach/types-nutrition": "workspace:*",
-    "@onecoach/types-chat": "workspace:*",
-    "@onecoach/types-analytics": "workspace:*",
-    "@onecoach/types-ai": "workspace:*",
-    "@onecoach/types-ui": "workspace:*",
-    "@onecoach/types-domain": "workspace:*",
-    "@onecoach/types-database": "workspace:*"
+    "@giulio-leone/constants": "^0.13.0",
+    "@giulio-leone/lib-config": "^0.1.1",
+    "@giulio-leone/lib-vercel-admin": "^0.9.0",
+    "@giulio-leone/agent-contracts": "workspace:*",
+    "@giulio-leone/lib-core": "workspace:*",
+    "@giulio-leone/lib-shared": "workspace:*",
+    "@giulio-leone/schemas": "workspace:*",
+    "@prisma/client": "^7.2.0"
   },
   "devDependencies": {
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
   "sideEffects": false

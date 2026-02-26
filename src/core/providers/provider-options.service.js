@@ -5,7 +5,7 @@
  * Follows Single Responsibility Principle by focusing only on provider options.
  */
 import {} from './types';
-import { AI_REASONING_CONFIG } from '@onecoach/constants/models';
+import { AI_REASONING_CONFIG } from '@giulio-leone/constants/models';
 /**
  * Builds provider-specific options for AI model execution
  */

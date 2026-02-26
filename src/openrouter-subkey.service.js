@@ -4,9 +4,9 @@
  * Gestione subkey OpenRouter per utenti
  * Crea, revoca e salva subkey nel database
  */
-import { prisma } from '@onecoach/lib-core/prisma';
-import { logger } from '@onecoach/lib-core';
-import { createId } from '@onecoach/lib-shared/id-generator';
+import { prisma } from '@giulio-leone/lib-core/prisma';
+import { logger } from '@giulio-leone/lib-core';
+import { createId } from '@giulio-leone/lib-shared/id-generator';
 const log = logger.child('OpenRouterSubkeyService');
 import crypto from 'crypto';
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';

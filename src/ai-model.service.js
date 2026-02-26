@@ -1,9 +1,9 @@
-import { prisma } from '@onecoach/lib-core';
+import { prisma } from '@giulio-leone/lib-core';
 import { ProviderFactory } from './core/providers/provider-factory';
-import { TOKEN_LIMITS } from '@onecoach/constants/models';
-import { OperationType } from '@onecoach/types';
+import { TOKEN_LIMITS } from '@giulio-leone/constants/models';
+import { OperationType } from '@giulio-leone/types';
 import { buildProviderOptions } from './provider-options-builder';
-import { normalizeProviderName } from '@onecoach/types-ai';
+import { normalizeProviderName } from '@giulio-leone/types-ai';
 export class AIModelService {
   static _configCache = new Map();
   static CACHE_TTL_MS = 60_000; // 60 seconds
@@ -131,7 +131,7 @@ export class AIModelService {
     // Prefer provider from DB if available (mapped to ProviderName enum), otherwise guess from ID
     let providerName = this.determineProvider(modelId, preferredProvider);
     // If we have a DB record and it specifies a provider, use it
-    // Uses normalizeProviderName from @onecoach/types-ai (SSOT for provider normalization)
+    // Uses normalizeProviderName from @giulio-leone/types-ai (SSOT for provider normalization)
     if (dbModel?.provider) {
       providerName = normalizeProviderName(dbModel.provider);
     }

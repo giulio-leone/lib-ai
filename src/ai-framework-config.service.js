@@ -8,7 +8,7 @@
  * - Mode selection intelligence
  * - Decomposition strategies
  */
-import { prisma } from '@onecoach/lib-core/prisma';
+import { prisma } from '@giulio-leone/lib-core/prisma';
 import { Prisma } from '@prisma/client';
 /**
  * Framework features disponibili

@@ -1,5 +1,5 @@
 /**
- * @onecoach/lib-ai
+ * @giulio-leone/lib-ai
  *
  * Core AI capabilities, model management, and provider abstractions.
  */
@@ -61,4 +61,4 @@ export type {
 } from './core/providers/types';
 
 // Re-export provider resolution from types-ai SSOT
-export { resolveProviderFromModelId, MODEL_PREFIX_REGISTRY } from '@onecoach/types-ai';
+export { resolveProviderFromModelId, MODEL_PREFIX_REGISTRY } from '@giulio-leone/types/ai';

@@ -4,7 +4,7 @@
  * Gestione conversazioni e parsing risposte AI
  * Implementa IChatService contract
  */
-import { storageService, createId, getCurrentTimestamp } from '@onecoach/lib-shared';
+import { storageService, createId, getCurrentTimestamp } from '@giulio-leone/lib-shared';
 /**
  * Storage key
  */

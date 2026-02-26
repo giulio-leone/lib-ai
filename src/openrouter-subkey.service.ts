@@ -5,10 +5,10 @@
  * Crea, revoca e salva subkey nel database
  */
 
-import { prisma } from '@onecoach/lib-core';
+import { prisma } from '@giulio-leone/lib-core';
 import type { Prisma } from '@prisma/client';
-import { logger } from '@onecoach/lib-core';
-import { createId } from '@onecoach/lib-shared/id-generator';
+import { logger } from '@giulio-leone/lib-core';
+import { createId } from '@giulio-leone/lib-shared/id-generator';
 
 const log = logger.child('OpenRouterSubkeyService');
 import crypto from 'crypto';

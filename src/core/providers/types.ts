@@ -1,7 +1,7 @@
 /**
  * Provider types and interfaces for AI SDK
  *
- * SSOT: @onecoach/types-ai
+ * SSOT: @giulio-leone/types-ai
  */
 
 export type {
@@ -12,4 +12,4 @@ export type {
   ProviderConfig,
   ModelConfig,
   ExtendedModelConfig,
-} from '@onecoach/types-ai';
+} from '@giulio-leone/types/ai';

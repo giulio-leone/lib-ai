@@ -1,5 +1,5 @@
 import type { ModelConfig, ModelTier, ExtendedModelConfig } from './types';
-import { TOKEN_LIMITS } from '@onecoach/constants';
+import { TOKEN_LIMITS } from '@giulio-leone/constants';
 
 /**
  * Model configurations with costs and settings

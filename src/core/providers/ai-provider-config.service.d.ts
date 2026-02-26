@@ -7,7 +7,7 @@
  */
 import { AIProvider, type Prisma } from '@prisma/client';
 import type { ProviderName } from './types';
-import { type VercelEnvironment } from '@onecoach/lib-vercel-admin/vercel-env-vars-api.service';
+type VercelEnvironment = 'production' | 'preview' | 'development';
 interface ProviderMapEntry {
   enum: AIProvider;
   env: string;

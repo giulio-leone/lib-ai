@@ -7,7 +7,7 @@
  */
 
 import { streamText, generateText, Output, type LanguageModel, type ModelMessage } from 'ai';
-import { AIProviderFactory } from '@onecoach/lib-core';
+import { AIProviderFactory } from '@giulio-leone/lib-core';
 import { buildProviderOptions } from '../provider-options-builder';
 import type { z } from 'zod';
 import {
@@ -17,7 +17,7 @@ import {
   type OpenRouterMetadata,
   handleError,
 } from './types';
-import { resolveProviderFromModelId } from '@onecoach/types-ai';
+import { resolveProviderFromModelId } from '@giulio-leone/types/ai';
 
 /**
  * MiniMax supported models

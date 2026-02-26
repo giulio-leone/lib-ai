@@ -6,7 +6,7 @@
  * Database contiene solo metadata (isEnabled, defaultModel, etc.)
  */
 
-import { prisma } from '@onecoach/lib-core';
+import { prisma } from '@giulio-leone/lib-core';
 import { AIProvider, type Prisma } from '@prisma/client';
 import type { ProviderName } from './types';
 import {
@@ -14,10 +14,11 @@ import {
   getEnvVarByKey,
   updateEnvVar,
   envVarExists,
-  type VercelEnvironment,
-} from '@onecoach/lib-vercel-admin/vercel-env-vars-api.service';
-import { logError } from '@onecoach/lib-shared';
-import { logger } from '@onecoach/lib-shared';
+} from '@giulio-leone/lib-vercel-admin';
+
+type VercelEnvironment = 'production' | 'preview' | 'development';
+import { logError } from '@giulio-leone/lib-shared';
+import { logger } from '@giulio-leone/lib-shared';
 
 interface ProviderMapEntry {
   enum: AIProvider;
@@ -371,7 +372,7 @@ export class AIProviderConfigService {
    */
   static async getApiKey(provider: ProviderName): Promise<string | null> {
     // Importa dinamicamente per evitare cicli o problemi di inizializzazione
-    const { getDynamicAIProviderKey } = await import('@onecoach/lib-config/env.server');
+    const { getDynamicAIProviderKey } = await import('@giulio-leone/lib-config/env.server');
 
     const apiKey = await getDynamicAIProviderKey(provider);
 

@@ -1,14 +1,14 @@
-import { prisma } from '@onecoach/lib-core';
+import { prisma } from '@giulio-leone/lib-core';
 import type { LanguageModel } from 'ai';
 
 import { ProviderFactory } from './core/providers/provider-factory';
 import type { ProviderName } from './core/providers/types';
 import type { StandardizedModelConfig } from './types';
-import { normalizeProviderName, resolveProviderFromModelId } from '@onecoach/types-ai';
+import { normalizeProviderName, resolveProviderFromModelId } from '@giulio-leone/types/ai';
 
-import { TOKEN_LIMITS } from '@onecoach/constants';
+import { TOKEN_LIMITS } from '@giulio-leone/constants';
 import { buildProviderOptions } from './provider-options-builder';
-import { OperationType } from '@onecoach/types-database';
+import { OperationType } from '@giulio-leone/types/database';
 
 export class AIModelService {
   private static _configCache = new Map<string, StandardizedModelConfig & { __cachedAt: number }>();
@@ -174,7 +174,7 @@ export class AIModelService {
     let providerName: ProviderName = this.determineProvider(modelId);
 
     // If we have a DB record and it specifies a provider, use it
-    // Uses normalizeProviderName from @onecoach/types-ai (SSOT for provider normalization)
+    // Uses normalizeProviderName from @giulio-leone/types/ai (SSOT for provider normalization)
     if (dbModel?.provider) {
       providerName = normalizeProviderName(dbModel.provider);
     }

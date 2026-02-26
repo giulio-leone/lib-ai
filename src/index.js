@@ -19,4 +19,4 @@ export * from './ai-model.service';
 export * from './openrouter-subkey.service';
 // Provider
 export * from './ai-provider';
-// NOTE: ProviderName type should be imported from '@onecoach/lib-ai'
+// NOTE: ProviderName type should be imported from '@giulio-leone/lib-ai'

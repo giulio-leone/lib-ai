@@ -5,16 +5,16 @@
  * API keys principali sono gestite su Vercel Environment Variables (secrets)
  * Database contiene solo metadata (isEnabled, defaultModel, etc.)
  */
-import { prisma } from '@onecoach/lib-core/prisma';
+import { prisma } from '@giulio-leone/lib-core/prisma';
 import { AIProvider } from '@prisma/client';
 import {
   createEnvVar,
   getEnvVarByKey,
   updateEnvVar,
   envVarExists,
-} from '@onecoach/lib-vercel-admin/vercel-env-vars-api.service';
-import { logError } from '@onecoach/lib-shared/utils/error';
-import { logger } from '@onecoach/lib-shared/utils/logger';
+} from '@giulio-leone/lib-vercel-admin/vercel-env-vars-api.service';
+import { logError } from '@giulio-leone/lib-shared/utils/error';
+import { logger } from '@giulio-leone/lib-shared/utils/logger';
 export const PROVIDER_MAP = {
   google: {
     enum: AIProvider.GOOGLE,
@@ -298,7 +298,7 @@ export class AIProviderConfigService {
    */
   static async getApiKey(provider) {
     // Importa dinamicamente per evitare cicli o problemi di inizializzazione
-    const { getDynamicAIProviderKey } = await import('@onecoach/lib-config/env.server');
+    const { getDynamicAIProviderKey } = await import('@giulio-leone/lib-config/env.server');
     const apiKey = await getDynamicAIProviderKey(provider);
     // Verifica che la chiave esista e non sia vuota
     if (apiKey) {

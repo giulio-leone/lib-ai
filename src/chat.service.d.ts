@@ -4,7 +4,7 @@
  * Gestione conversazioni e parsing risposte AI
  * Implementa IChatService contract
  */
-import type { IChatService } from '@onecoach/contracts';
+import type { IChatService } from '@giulio-leone/contracts';
 /**
  * Singleton instance
  */

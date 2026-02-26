@@ -6,7 +6,7 @@
  */
 
 import { type ModelConfig } from './types';
-import { AI_REASONING_CONFIG } from '@onecoach/constants';
+import { AI_REASONING_CONFIG } from '@giulio-leone/constants';
 
 /**
  * Builds provider-specific options for AI model execution
