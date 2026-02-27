@@ -10,41 +10,41 @@ CLI Target: es2022
 CLI Cleaning output folder
 ESM Build start
 CJS Build start
-ESM dist/index.js                           64.17 KB
+ESM dist/ai-framework-config.service.js     12.00 KB
 ESM dist/ai-model.service.js                27.18 KB
-ESM dist/provider-options-builder.js        838.00 B
-ESM dist/utils/model-factory.js             6.46 KB
-ESM dist/chat.service.js                    2.85 KB
 ESM dist/ai-provider-config.service.js      17.96 KB
 ESM dist/openrouter-subkey.service.js       4.31 KB
-ESM dist/ai-framework-config.service.js     12.00 KB
+ESM dist/index.js                           72.10 KB
+ESM dist/provider-options-builder.js        838.00 B
+ESM dist/utils/model-factory.js             6.46 KB
 ESM dist/ai-provider-config.js              17.94 KB
-ESM dist/provider-options-builder.js.map    3.63 KB
-ESM dist/index.js.map                       147.97 KB
+ESM dist/chat.service.js                    2.85 KB
+ESM dist/ai-framework-config.service.js.map 28.22 KB
+ESM dist/index.js.map                       168.99 KB
 ESM dist/ai-provider-config.service.js.map  38.01 KB
 ESM dist/utils/model-factory.js.map         14.61 KB
+ESM dist/ai-model.service.js.map            56.53 KB
+ESM dist/ai-provider-config.js.map          38.00 KB
+ESM dist/provider-options-builder.js.map    3.63 KB
 ESM dist/openrouter-subkey.service.js.map   8.94 KB
 ESM dist/chat.service.js.map                6.32 KB
-ESM dist/ai-model.service.js.map            56.53 KB
-ESM dist/ai-framework-config.service.js.map 28.22 KB
-ESM dist/ai-provider-config.js.map          38.00 KB
-ESM ⚡️ Build success in 237ms
-CJS dist/index.cjs                           66.59 KB
+ESM ⚡️ Build success in 344ms
+CJS dist/ai-framework-config.service.cjs     12.12 KB
+CJS dist/ai-provider-config.service.cjs      18.22 KB
+CJS dist/openrouter-subkey.service.cjs       4.55 KB
 CJS dist/ai-provider-config.cjs              18.20 KB
+CJS dist/utils/model-factory.cjs             6.68 KB
+CJS dist/index.cjs                           74.70 KB
+CJS dist/provider-options-builder.cjs        875.00 B
 CJS dist/chat.service.cjs                    2.90 KB
 CJS dist/ai-model.service.cjs                27.46 KB
-CJS dist/ai-provider-config.service.cjs      18.22 KB
-CJS dist/ai-framework-config.service.cjs     12.12 KB
-CJS dist/openrouter-subkey.service.cjs       4.55 KB
-CJS dist/utils/model-factory.cjs             6.68 KB
-CJS dist/provider-options-builder.cjs        875.00 B
-CJS dist/index.cjs.map                       148.38 KB
-CJS dist/ai-provider-config.cjs.map          38.19 KB
 CJS dist/ai-framework-config.service.cjs.map 28.26 KB
-CJS dist/chat.service.cjs.map                6.38 KB
+CJS dist/openrouter-subkey.service.cjs.map   9.00 KB
+CJS dist/ai-provider-config.cjs.map          38.19 KB
 CJS dist/ai-provider-config.service.cjs.map  38.20 KB
 CJS dist/provider-options-builder.cjs.map    3.63 KB
-CJS dist/ai-model.service.cjs.map            56.80 KB
 CJS dist/utils/model-factory.cjs.map         14.66 KB
-CJS dist/openrouter-subkey.service.cjs.map   9.00 KB
-CJS ⚡️ Build success in 237ms
+CJS dist/index.cjs.map                       169.39 KB
+CJS dist/chat.service.cjs.map                6.38 KB
+CJS dist/ai-model.service.cjs.map            56.80 KB
+CJS ⚡️ Build success in 344ms

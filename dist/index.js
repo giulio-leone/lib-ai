@@ -1585,6 +1585,280 @@ var OpenRouterSubkeyService = class {
   }
 };
 
+// src/provider-sync.service.ts
+init_provider_factory();
+var PROVIDER_LIST_ENDPOINTS = {
+  openai: "https://api.openai.com/v1/models",
+  openrouter: "https://openrouter.ai/api/v1/models",
+  anthropic: "https://api.anthropic.com/v1/models"
+};
+var PROVIDER_ENV_KEYS = {
+  openai: "OPENAI_API_KEY",
+  anthropic: "ANTHROPIC_API_KEY",
+  google: "GOOGLE_GENERATIVE_AI_API_KEY",
+  xai: "XAI_API_KEY",
+  openrouter: "OPENROUTER_API_KEY",
+  minimax: "MINIMAX_API_KEY"
+};
+var ProviderSyncServiceImpl = class {
+  /**
+   * Fetch available models from a provider's API.
+   */
+  async getModels(provider) {
+    const normalizedProvider = provider.toLowerCase();
+    const apiKey = this.getApiKey(normalizedProvider);
+    if (!apiKey) {
+      throw new Error(
+        `No API key configured for provider: ${provider}`
+      );
+    }
+    const endpoint = PROVIDER_LIST_ENDPOINTS[normalizedProvider];
+    if (!endpoint) {
+      return [];
+    }
+    const headers = {
+      Authorization: `Bearer ${apiKey}`
+    };
+    if (normalizedProvider === "anthropic") {
+      delete headers["Authorization"];
+      headers["x-api-key"] = apiKey;
+      headers["anthropic-version"] = "2023-06-01";
+    }
+    const response = await fetch(endpoint, { headers });
+    if (!response.ok) {
+      throw new Error(
+        `Provider API error (${provider}): ${response.status} ${response.statusText}`
+      );
+    }
+    const body = await response.json();
+    return this.normalizeModels(normalizedProvider, body);
+  }
+  /**
+   * Test a model by sending a minimal prompt and measuring latency.
+   */
+  async testModel(provider, modelId) {
+    const start = Date.now();
+    try {
+      const config = {
+        modelId,
+        provider: provider.toLowerCase(),
+        temperature: 0
+      };
+      const model = ProviderFactory.getModel(config);
+      const { generateText: generateText3 } = await import('ai');
+      const result = await generateText3({
+        model,
+        prompt: 'Reply with exactly: "OK"',
+        maxTokens: 10
+      });
+      return {
+        success: true,
+        latencyMs: Date.now() - start,
+        response: result.text?.trim()
+      };
+    } catch (error) {
+      return {
+        success: false,
+        latencyMs: Date.now() - start,
+        error: error instanceof Error ? error.message : String(error)
+      };
+    }
+  }
+  // --- Private Helpers ---
+  getApiKey(provider) {
+    const envKey = PROVIDER_ENV_KEYS[provider];
+    return envKey ? process.env[envKey] : void 0;
+  }
+  normalizeModels(provider, body) {
+    const data = body;
+    switch (provider) {
+      case "openai":
+        return this.normalizeOpenAIModels(data);
+      case "anthropic":
+        return this.normalizeAnthropicModels(data);
+      case "openrouter":
+        return this.normalizeOpenRouterModels(data);
+      default:
+        return [];
+    }
+  }
+  normalizeOpenAIModels(body) {
+    const models = body.data ?? [];
+    return models.filter(
+      (m) => typeof m.id === "string" && (m.id.startsWith("gpt-") || m.id.startsWith("o"))
+    ).map((m) => ({
+      modelId: m.id,
+      name: m.id,
+      description: m.description ?? void 0
+    }));
+  }
+  normalizeAnthropicModels(body) {
+    const models = body.data ?? [];
+    return models.map((m) => ({
+      modelId: m.id,
+      name: m.display_name ?? m.id,
+      description: m.description ?? void 0,
+      contextLength: m.context_window ?? void 0,
+      maxOutputTokens: m.max_output ?? void 0
+    }));
+  }
+  normalizeOpenRouterModels(body) {
+    const models = body.data ?? [];
+    return models.map((m) => {
+      const pricing = m.pricing;
+      return {
+        modelId: m.id,
+        name: m.name ?? m.id,
+        description: m.description ?? void 0,
+        contextLength: m.context_length ?? void 0,
+        maxOutputTokens: m.top_provider?.max_completion_tokens,
+        promptPrice: pricing?.prompt ? parseFloat(pricing.prompt) : void 0,
+        completionPrice: pricing?.completion ? parseFloat(pricing.completion) : void 0
+      };
+    });
+  }
+};
+var providerSyncService = new ProviderSyncServiceImpl();
+var GenerationStateServiceImpl = class {
+  /**
+   * Retrieve all recoverable generation states for a user,
+   * optionally filtered by generation type.
+   */
+  async getRecoverableStates(userId, type) {
+    const where = { userId };
+    if (type) where.type = type;
+    const states = await prisma.generation_states.findMany({
+      where,
+      orderBy: { updatedAt: "desc" }
+    });
+    return states.map((s) => this.toGenerationState(s));
+  }
+  /**
+   * Delete a generation state by ID.
+   */
+  async deleteState(stateId) {
+    await prisma.generation_states.delete({
+      where: { id: stateId }
+    });
+  }
+  /**
+   * Create a new generation state checkpoint.
+   */
+  async saveState(state) {
+    const created = await prisma.generation_states.create({
+      data: {
+        userId: state.userId,
+        type: state.type,
+        currentPhase: state.currentPhase,
+        completedPhases: state.completedPhases,
+        context: state.context,
+        checkpoints: state.checkpoints,
+        lastError: state.lastError
+      }
+    });
+    return this.toGenerationState(created);
+  }
+  /**
+   * Update the current phase and optionally merge new context.
+   */
+  async updatePhase(stateId, phase, context) {
+    const existing = await prisma.generation_states.findUniqueOrThrow({
+      where: { id: stateId }
+    });
+    const completedPhases = [
+      ...existing.completedPhases ?? [],
+      existing.currentPhase
+    ];
+    await prisma.generation_states.update({
+      where: { id: stateId },
+      data: {
+        currentPhase: phase,
+        completedPhases,
+        ...context !== void 0 ? { context } : {}
+      }
+    });
+  }
+  // --- Private Helpers ---
+  toGenerationState(row) {
+    return {
+      id: row.id,
+      userId: row.userId,
+      type: row.type,
+      currentPhase: row.currentPhase,
+      completedPhases: row.completedPhases ?? [],
+      context: row.context,
+      checkpoints: row.checkpoints,
+      lastError: row.lastError,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt
+    };
+  }
+};
+var GenerationStateService = new GenerationStateServiceImpl();
+var WorkflowProgressServiceImpl = class {
+  /**
+   * Create a new workflow run metadata record.
+   */
+  async createRun(input) {
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO workflow.workflow_run_metadata 
+       (run_id, user_id, workflow_type, agent_id, input_data, estimated_duration_ms, total_steps, progress)
+       VALUES ($1, $2, $3::text::"WorkflowType", $4, $5::jsonb, $6, $7, 0)`,
+      input.runId,
+      input.userId,
+      input.workflowType,
+      input.agentId,
+      input.inputData ? JSON.stringify(input.inputData) : null,
+      input.estimatedDurationMs ?? null,
+      input.totalSteps ?? null
+    );
+  }
+  /**
+   * Update the progress of a running workflow.
+   */
+  async updateProgress(input) {
+    await prisma.$executeRawUnsafe(
+      `UPDATE workflow.workflow_run_metadata 
+       SET progress = $2, current_step = $3
+       WHERE run_id = $1`,
+      input.runId,
+      Math.min(Math.max(input.progress, 0), 100),
+      input.currentStep ?? null
+    );
+  }
+  /**
+   * Mark a workflow as successfully completed.
+   */
+  async completeWorkflow(input) {
+    await prisma.$executeRawUnsafe(
+      `UPDATE workflow.workflow_run_metadata 
+       SET progress = 100, 
+           completed_at = NOW(),
+           output_data = $2::jsonb,
+           result_entity_type = $3,
+           result_entity_id = $4
+       WHERE run_id = $1`,
+      input.runId,
+      input.outputData ? JSON.stringify(input.outputData) : null,
+      input.resultEntityType ?? null,
+      input.resultEntityId ?? null
+    );
+  }
+  /**
+   * Mark a workflow as failed with an error message.
+   */
+  async failWorkflow(input) {
+    await prisma.$executeRawUnsafe(
+      `UPDATE workflow.workflow_run_metadata 
+       SET error_message = $2, completed_at = NOW()
+       WHERE run_id = $1`,
+      input.runId,
+      input.errorMessage
+    );
+  }
+};
+var workflowProgressService = new WorkflowProgressServiceImpl();
+
 // src/sdk/types.ts
 function handleError(error) {
   if (error instanceof Error) {
@@ -1905,6 +2179,6 @@ init_provider_factory();
 var EXERCISE_SYSTEM_PROMPT = `You are a certified strength coach and exercise database expert. Provide biomechanically sound movements, correct muscle targeting, and clear safety cues. Always respect provided schemas and return structured JSON when requested.`;
 var EXERCISE_TOOL_USAGE_PROMPT = `Tools available: generate_exercises, create_exercise_variants, search_exercises. Choose the smallest set of tools to satisfy the user; avoid unnecessary calls.`;
 
-export { AIFrameworkConfigService, AIModelService, AIProvider2 as AIProvider, AIProviderConfigService, EXERCISE_SYSTEM_PROMPT, EXERCISE_TOOL_USAGE_PROMPT, FrameworkFeature, MINIMAX_MODELS, MODEL_CONFIGS, MODEL_CONSTANTS, OpenRouterSubkeyService, PROVIDER_MAP, ProviderFactory, ProviderOptionsService, buildProviderOptions, chatService, createAIProvider, createCustomModel, createIntentDetectionModel, createModel, createModelAsync, createModelWithOptions, createReasoningModel, getFallbackChain, getModelByTier, handleError };
+export { AIFrameworkConfigService, AIModelService, AIProvider2 as AIProvider, AIProviderConfigService, EXERCISE_SYSTEM_PROMPT, EXERCISE_TOOL_USAGE_PROMPT, FrameworkFeature, GenerationStateService, MINIMAX_MODELS, MODEL_CONFIGS, MODEL_CONSTANTS, OpenRouterSubkeyService, PROVIDER_MAP, ProviderFactory, ProviderOptionsService, buildProviderOptions, chatService, createAIProvider, createCustomModel, createIntentDetectionModel, createModel, createModelAsync, createModelWithOptions, createReasoningModel, getFallbackChain, getModelByTier, handleError, providerSyncService, workflowProgressService };
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map
