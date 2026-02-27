@@ -24,6 +24,8 @@ export * from './ai-framework-config.service';
 export * from './chat.service';
 export * from './openrouter-subkey.service';
 export * from './provider-options-builder';
+export * from './provider-sync.service';
+export * from './generation-state.service';
 // export * from './intent-detection.service'; // Ensure this exists and is exported if needed
 
 // SDK
