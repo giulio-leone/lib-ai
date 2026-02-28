@@ -213,7 +213,7 @@ export class AIModelService {
     // Calculate effective max output tokens
     const effectiveMaxTokens = Math.min(
       maxTokens ?? TOKEN_LIMITS.DEFAULT_MAX_TOKENS,
-      TOKEN_LIMITS.MAX_OUTPUT
+      TOKEN_LIMITS.MAX_OUTPUT ?? 4096
     );
 
     // 8. Build Provider Options using centralized utility

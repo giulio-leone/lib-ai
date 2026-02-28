@@ -6,8 +6,8 @@
  * and tests model availability.
  */
 
-import { AIProviderConfigService } from './core/providers/ai-provider-config.service';
 import { ProviderFactory } from './core/providers/provider-factory';
+import type { ProviderName } from './core/providers/types';
 
 // --- Port (Interface) ---
 
@@ -110,8 +110,8 @@ class ProviderSyncServiceImpl implements IProviderSyncService {
 
     try {
       const config = {
-        modelId,
-        provider: provider.toLowerCase(),
+        model: modelId,
+        provider: provider.toLowerCase() as ProviderName,
         temperature: 0,
       };
 
@@ -122,7 +122,6 @@ class ProviderSyncServiceImpl implements IProviderSyncService {
       const result = await generateText({
         model,
         prompt: 'Reply with exactly: "OK"',
-        maxTokens: 10,
       });
 
       return {
@@ -169,12 +168,11 @@ class ProviderSyncServiceImpl implements IProviderSyncService {
   ): ProviderModelData[] {
     const models = (body.data as Array<Record<string, unknown>>) ?? [];
     return models
-      .filter(
-        (m) =>
+      .filter((m: any) =>
           typeof m.id === 'string' &&
           (m.id.startsWith('gpt-') || m.id.startsWith('o')),
       )
-      .map((m) => ({
+      .map((m: any) => ({
         modelId: m.id as string,
         name: m.id as string,
         description: (m.description as string) ?? undefined,
@@ -185,7 +183,7 @@ class ProviderSyncServiceImpl implements IProviderSyncService {
     body: Record<string, unknown>,
   ): ProviderModelData[] {
     const models = (body.data as Array<Record<string, unknown>>) ?? [];
-    return models.map((m) => ({
+    return models.map((m: any) => ({
       modelId: m.id as string,
       name: (m.display_name as string) ?? (m.id as string),
       description: (m.description as string) ?? undefined,
@@ -198,7 +196,7 @@ class ProviderSyncServiceImpl implements IProviderSyncService {
     body: Record<string, unknown>,
   ): ProviderModelData[] {
     const models = (body.data as Array<Record<string, unknown>>) ?? [];
-    return models.map((m) => {
+    return models.map((m: any) => {
       const pricing = m.pricing as Record<string, string> | undefined;
       return {
         modelId: m.id as string,

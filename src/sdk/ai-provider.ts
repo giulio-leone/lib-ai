@@ -82,7 +82,10 @@ export class AIProvider implements IAIProvider {
         this.providers.set('xai', AIProviderFactory.createXAI(config.apiKey) as ProviderCallable);
         break;
       case 'minimax':
-        this.providers.set('minimax', AIProviderFactory.createMiniMax(config.apiKey) as ProviderCallable);
+        this.providers.set(
+          'minimax',
+          AIProviderFactory.createMiniMax(config.apiKey) as unknown as ProviderCallable
+        );
         break;
     }
   }

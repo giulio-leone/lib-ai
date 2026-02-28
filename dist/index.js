@@ -2179,6 +2179,23 @@ init_provider_factory();
 var EXERCISE_SYSTEM_PROMPT = `You are a certified strength coach and exercise database expert. Provide biomechanically sound movements, correct muscle targeting, and clear safety cues. Always respect provided schemas and return structured JSON when requested.`;
 var EXERCISE_TOOL_USAGE_PROMPT = `Tools available: generate_exercises, create_exercise_variants, search_exercises. Choose the smallest set of tools to satisfy the user; avoid unnecessary calls.`;
 
-export { AIFrameworkConfigService, AIModelService, AIProvider2 as AIProvider, AIProviderConfigService, EXERCISE_SYSTEM_PROMPT, EXERCISE_TOOL_USAGE_PROMPT, FrameworkFeature, GenerationStateService, MINIMAX_MODELS, MODEL_CONFIGS, MODEL_CONSTANTS, OpenRouterSubkeyService, PROVIDER_MAP, ProviderFactory, ProviderOptionsService, buildProviderOptions, chatService, createAIProvider, createCustomModel, createIntentDetectionModel, createModel, createModelAsync, createModelWithOptions, createReasoningModel, getFallbackChain, getModelByTier, handleError, providerSyncService, workflowProgressService };
+// src/orchestration-resilience.ts
+var OrchestrationResilience = class {
+  async createContext(userId, name, stateId) {
+    return {
+      userId,
+      name,
+      stateId,
+      phaseResults: /* @__PURE__ */ new Map()
+    };
+  }
+  async executePhase(_ctx, _phaseName, fn) {
+    return fn();
+  }
+  async complete(_ctx) {
+  }
+};
+
+export { AIFrameworkConfigService, AIModelService, AIProvider2 as AIProvider, AIProviderConfigService, EXERCISE_SYSTEM_PROMPT, EXERCISE_TOOL_USAGE_PROMPT, FrameworkFeature, GenerationStateService, MINIMAX_MODELS, MODEL_CONFIGS, MODEL_CONSTANTS, OpenRouterSubkeyService, OrchestrationResilience, PROVIDER_MAP, ProviderFactory, ProviderOptionsService, buildProviderOptions, chatService, createAIProvider, createCustomModel, createIntentDetectionModel, createModel, createModelAsync, createModelWithOptions, createReasoningModel, getFallbackChain, getModelByTier, handleError, providerSyncService, workflowProgressService };
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map

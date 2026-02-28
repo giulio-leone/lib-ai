@@ -1,4 +1,5 @@
 
-> @onecoach/lib-ai@0.0.0 type-check /Users/giulioleone/Sviluppo/CoachOne/submodules/lib-ai
+> @giulio-leone/lib-ai@0.15.2 type-check /Users/giulioleone/Sviluppo/OneCoach/OneCoach/submodules/lib-ai
 > tsc --noEmit
 
+ ELIFECYCLE  Command failed.

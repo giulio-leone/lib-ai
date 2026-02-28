@@ -65,3 +65,5 @@ export type {
 
 // Re-export provider resolution from types-ai SSOT
 export { resolveProviderFromModelId, MODEL_PREFIX_REGISTRY } from '@giulio-leone/types/ai';
+
+export { OrchestrationResilience, type ResilienceContext } from './orchestration-resilience';

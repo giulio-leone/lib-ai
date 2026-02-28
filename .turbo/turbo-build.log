@@ -1,50 +1,51 @@
 
-> @giulio-leone/lib-ai@0.15.1 build /Users/giulioleone/Sviluppo/CoachOne/submodules/lib-ai
+
+> @giulio-leone/lib-ai@0.15.2 build /Users/giulioleone/Sviluppo/OneCoach/OneCoach/submodules/lib-ai
 > tsup
 
-CLI Building entry: {"index":"src/index.ts","ai-model.service":"src/ai-model.service.ts","ai-provider-config":"src/core/providers/ai-provider-config.service.ts","ai-framework-config.service":"src/ai-framework-config.service.ts","ai-provider-config.service":"src/core/providers/ai-provider-config.service.ts","chat.service":"src/chat.service.ts","openrouter-subkey.service":"src/openrouter-subkey.service.ts","utils/model-factory":"src/utils/model-factory.ts","provider-options-builder":"src/provider-options-builder.ts"}
-CLI Using tsconfig: tsconfig.json
-CLI tsup v8.5.1
-CLI Using tsup config: /Users/giulioleone/Sviluppo/CoachOne/submodules/lib-ai/tsup.config.ts
-CLI Target: es2022
-CLI Cleaning output folder
-ESM Build start
-CJS Build start
-CJS dist/ai-provider-config.cjs              18.20 KB
-CJS dist/index.cjs                           74.70 KB
-CJS dist/ai-provider-config.service.cjs      18.22 KB
-CJS dist/ai-framework-config.service.cjs     12.12 KB
-CJS dist/utils/model-factory.cjs             6.68 KB
-CJS dist/ai-model.service.cjs                27.46 KB
-CJS dist/provider-options-builder.cjs        875.00 B
-CJS dist/chat.service.cjs                    2.90 KB
-CJS dist/openrouter-subkey.service.cjs       4.55 KB
-CJS dist/index.cjs.map                       169.39 KB
-CJS dist/ai-provider-config.cjs.map          38.19 KB
-CJS dist/ai-provider-config.service.cjs.map  38.20 KB
-CJS dist/ai-framework-config.service.cjs.map 28.26 KB
-CJS dist/provider-options-builder.cjs.map    3.63 KB
-CJS dist/utils/model-factory.cjs.map         14.66 KB
-CJS dist/ai-model.service.cjs.map            56.80 KB
-CJS dist/openrouter-subkey.service.cjs.map   9.00 KB
-CJS dist/chat.service.cjs.map                6.38 KB
-CJS ⚡️ Build success in 772ms
-ESM dist/ai-model.service.js                27.18 KB
-ESM dist/chat.service.js                    2.85 KB
-ESM dist/openrouter-subkey.service.js       4.31 KB
-ESM dist/ai-provider-config.js              17.94 KB
-ESM dist/index.js                           72.10 KB
-ESM dist/provider-options-builder.js        838.00 B
-ESM dist/ai-framework-config.service.js     12.00 KB
-ESM dist/ai-provider-config.service.js      17.96 KB
-ESM dist/utils/model-factory.js             6.46 KB
-ESM dist/ai-model.service.js.map            56.53 KB
-ESM dist/openrouter-subkey.service.js.map   8.94 KB
-ESM dist/chat.service.js.map                6.32 KB
-ESM dist/index.js.map                       168.99 KB
-ESM dist/ai-framework-config.service.js.map 28.22 KB
-ESM dist/ai-provider-config.service.js.map  38.01 KB
-ESM dist/provider-options-builder.js.map    3.63 KB
-ESM dist/ai-provider-config.js.map          38.00 KB
-ESM dist/utils/model-factory.js.map         14.61 KB
-ESM ⚡️ Build success in 772ms
+[34mCLI[39m Building entry: {"index":"src/index.ts","ai-model.service":"src/ai-model.service.ts","ai-provider-config":"src/core/providers/ai-provider-config.service.ts","ai-framework-config.service":"src/ai-framework-config.service.ts","ai-provider-config.service":"src/core/providers/ai-provider-config.service.ts","chat.service":"src/chat.service.ts","openrouter-subkey.service":"src/openrouter-subkey.service.ts","utils/model-factory":"src/utils/model-factory.ts","provider-options-builder":"src/provider-options-builder.ts"}
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v8.5.1
+[34mCLI[39m Using tsup config: /Users/giulioleone/Sviluppo/OneCoach/OneCoach/submodules/lib-ai/tsup.config.ts
+[34mCLI[39m Target: es2022
+[34mCLI[39m Cleaning output folder
+[34mESM[39m Build start
+[34mCJS[39m Build start
+[32mCJS[39m [1mdist/ai-provider-config.service.cjs      [22m[32m18.22 KB[39m
+[32mCJS[39m [1mdist/openrouter-subkey.service.cjs       [22m[32m4.55 KB[39m
+[32mCJS[39m [1mdist/provider-options-builder.cjs        [22m[32m875.00 B[39m
+[32mCJS[39m [1mdist/index.cjs                           [22m[32m75.08 KB[39m
+[32mCJS[39m [1mdist/ai-framework-config.service.cjs     [22m[32m12.12 KB[39m
+[32mCJS[39m [1mdist/ai-model.service.cjs                [22m[32m27.46 KB[39m
+[32mCJS[39m [1mdist/ai-provider-config.cjs              [22m[32m18.20 KB[39m
+[32mCJS[39m [1mdist/utils/model-factory.cjs             [22m[32m6.68 KB[39m
+[32mCJS[39m [1mdist/chat.service.cjs                    [22m[32m2.90 KB[39m
+[32mCJS[39m [1mdist/ai-provider-config.service.cjs.map  [22m[32m38.20 KB[39m
+[32mCJS[39m [1mdist/provider-options-builder.cjs.map    [22m[32m3.63 KB[39m
+[32mCJS[39m [1mdist/index.cjs.map                       [22m[32m170.61 KB[39m
+[32mCJS[39m [1mdist/ai-framework-config.service.cjs.map [22m[32m28.26 KB[39m
+[32mCJS[39m [1mdist/ai-provider-config.cjs.map          [22m[32m38.19 KB[39m
+[32mCJS[39m [1mdist/openrouter-subkey.service.cjs.map   [22m[32m9.00 KB[39m
+[32mCJS[39m [1mdist/ai-model.service.cjs.map            [22m[32m56.80 KB[39m
+[32mCJS[39m [1mdist/chat.service.cjs.map                [22m[32m6.38 KB[39m
+[32mCJS[39m [1mdist/utils/model-factory.cjs.map         [22m[32m14.66 KB[39m
+[32mCJS[39m ⚡️ Build success in 494ms
+[32mESM[39m [1mdist/ai-provider-config.js              [22m[32m17.94 KB[39m
+[32mESM[39m [1mdist/chat.service.js                    [22m[32m2.85 KB[39m
+[32mESM[39m [1mdist/ai-framework-config.service.js     [22m[32m12.00 KB[39m
+[32mESM[39m [1mdist/ai-model.service.js                [22m[32m27.18 KB[39m
+[32mESM[39m [1mdist/utils/model-factory.js             [22m[32m6.46 KB[39m
+[32mESM[39m [1mdist/provider-options-builder.js        [22m[32m838.00 B[39m
+[32mESM[39m [1mdist/ai-provider-config.service.js      [22m[32m17.96 KB[39m
+[32mESM[39m [1mdist/openrouter-subkey.service.js       [22m[32m4.31 KB[39m
+[32mESM[39m [1mdist/index.js                           [22m[32m72.45 KB[39m
+[32mESM[39m [1mdist/ai-provider-config.js.map          [22m[32m38.00 KB[39m
+[32mESM[39m [1mdist/chat.service.js.map                [22m[32m6.32 KB[39m
+[32mESM[39m [1mdist/ai-framework-config.service.js.map [22m[32m28.22 KB[39m
+[32mESM[39m [1mdist/provider-options-builder.js.map    [22m[32m3.63 KB[39m
+[32mESM[39m [1mdist/ai-model.service.js.map            [22m[32m56.53 KB[39m
+[32mESM[39m [1mdist/utils/model-factory.js.map         [22m[32m14.61 KB[39m
+[32mESM[39m [1mdist/ai-provider-config.service.js.map  [22m[32m38.01 KB[39m
+[32mESM[39m [1mdist/openrouter-subkey.service.js.map   [22m[32m8.94 KB[39m
+[32mESM[39m [1mdist/index.js.map                       [22m[32m170.21 KB[39m
+[32mESM[39m ⚡️ Build success in 495ms

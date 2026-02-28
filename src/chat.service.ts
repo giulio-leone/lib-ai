@@ -7,7 +7,7 @@
 
 import { storageService, createId, getCurrentTimestamp } from '@giulio-leone/lib-shared';
 import type { IStorageService } from '@giulio-leone/lib-shared';
-import type { Message, Conversation, ParsedAiResponse, RequestType } from "@giulio-leone/types-chat";
+import type { Message, Conversation, ParsedAiResponse, RequestType } from '@giulio-leone/types/chat';
 import type { IChatService } from "@giulio-leone/contracts";
 
 /**

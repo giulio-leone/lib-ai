@@ -56,17 +56,20 @@ export class ProviderFactory {
   ): ProviderInstance {
     switch (providerName) {
       case 'openrouter':
-        return AIProviderFactory.createOpenRouter({ apiKey, preferredProvider }) as ProviderInstance;
+        return AIProviderFactory.createOpenRouter({
+          apiKey,
+          preferredProvider,
+        }) as unknown as ProviderInstance;
       case 'openai':
-        return AIProviderFactory.createOpenAI(apiKey) as ProviderInstance;
+        return AIProviderFactory.createOpenAI(apiKey) as unknown as ProviderInstance;
       case 'anthropic':
-        return AIProviderFactory.createAnthropic(apiKey) as ProviderInstance;
+        return AIProviderFactory.createAnthropic(apiKey) as unknown as ProviderInstance;
       case 'google':
-        return AIProviderFactory.createGoogle(apiKey) as ProviderInstance;
+        return AIProviderFactory.createGoogle(apiKey) as unknown as ProviderInstance;
       case 'xai':
-        return AIProviderFactory.createXAI(apiKey) as ProviderInstance;
+        return AIProviderFactory.createXAI(apiKey) as unknown as ProviderInstance;
       case 'minimax':
-        return AIProviderFactory.createMiniMax(apiKey) as ProviderInstance;
+        return AIProviderFactory.createMiniMax(apiKey) as unknown as ProviderInstance;
       // Note: gemini-cli is async-only, handled in getModelAsync()
       default:
         throw new Error(`Unknown provider: ${providerName}`);
@@ -129,14 +132,8 @@ export class ProviderFactory {
     const cacheKey = `${config.provider}-${config.model}-${apiKey}-${thinkingLevel}`;
 
     if (!this.modelCache.has(cacheKey)) {
-      const provider = await AIProviderFactory.createGeminiCli({
-        apiKey: apiKey || undefined,
-        thinkingLevel,
-      });
-
-      const model = provider(config.model, {
-        thinkingConfig: { thinkingLevel },
-      });
+      const provider = AIProviderFactory.createGoogle(apiKey || undefined) as unknown as ProviderInstance;
+      const model = provider(config.model);
 
       this.modelCache.set(cacheKey, model);
     }

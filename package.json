@@ -1,6 +1,6 @@
 {
   "name": "@giulio-leone/lib-ai",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "type": "module",
   "description": "Servizi AI (config, chat, intent-detection, agent-orchestrator)",
   "main": "./dist/index.cjs",

@@ -218,8 +218,8 @@ export class AIFrameworkConfigService {
     return {
       isEnabled: record.isEnabled,
       config:
-        (record.config as FeatureConfigMap[F]) ||
-        (DEFAULT_CONFIGS[normalizedFeature] as FeatureConfigMap[F]),
+        (record.config as unknown as FeatureConfigMap[F]) ||
+        (DEFAULT_CONFIGS[normalizedFeature] as unknown as FeatureConfigMap[F]),
     };
   }
 
@@ -486,7 +486,7 @@ export class AIFrameworkConfigService {
           ['image', 'pdf', 'document', 'spreadsheet'] as Array<
             keyof NonNullable<ImportModelsConfig['creditCosts']>
           >
-        ).forEach((key) => {
+        ).forEach((key: keyof NonNullable<ImportModelsConfig['creditCosts']>) => {
           const value = c.creditCosts?.[key];
           if (value === undefined || Number.isNaN(Number(value)) || value < 0) {
             errors.push(`creditCosts.${key} must be >= 0`);

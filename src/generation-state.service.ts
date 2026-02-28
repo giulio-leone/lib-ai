@@ -60,7 +60,7 @@ class GenerationStateServiceImpl implements IGenerationStateService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    return states.map((s) => this.toGenerationState(s));
+    return states.map((s: any) => this.toGenerationState(s));
   }
 
   /**
